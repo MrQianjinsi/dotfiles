@@ -1,40 +1,4 @@
-# 忽略$HOME目录下的所有文件，但不忽略$HOME目录自身，注意不能用*代替
-/*
-# 要加入git的文件列表
-!.gitignore
-# 各类配置文件
-!README.MD
-!.bashrc
-!.wgetrc
-!.gemrc
-!.npmrc
-!.gtkrc-2.0
-!.tmux.conf
-# config目录
-!.config/
-.config/*
-!.config/i3/
-!.config/ranger/
-!.config/nvim/
-!.config/pip/
-!.config/gtk-3.0/
-!.config/pylintrc
-# fonts
-!.local
-.local/*
-!.local/share
-.local/share/*
-!.local/share/fonts/
-# vim
-!.vim/
-.vim/*
-!.vim/.vimrc
-!.vim/mysnippets/
-# git config
-!.git_conf/
-# 一些脚本文件
-!.bin/
-# bash configs
-!.bash_completions
-# docker config
-!.docker
+.DS_Store
+*.swp
+*.swo
+*~
