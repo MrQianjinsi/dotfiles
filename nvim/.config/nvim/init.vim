@@ -57,6 +57,9 @@ Plug 'L3MON4D3/LuaSnip'
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'rafamadriz/friendly-snippets'
 
+" Treesitter (better syntax highlighting)
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
 " color schemes
 Plug 'flazz/vim-colorschemes'
 Plug 'sickill/vim-monokai'
@@ -96,7 +99,7 @@ set hlsearch " highlight search result
 set showcmd
 
 " Map leader to <Space>
-map <SPACE> <leader>
+let mapleader = " "
 " Backspace deletes like most programs in insert mode
 set backspace=2
 " Set fileencodings
@@ -187,9 +190,7 @@ let NERDTreeChDirMode=2
 let NERDTreeIgnore=['\~$', '\.pyc$', '\.swp$']
 let NERDTreeShowBookmarks=1
 let NERDTreeWinPos="left"
-" Automatically open a NERDTree if opening a directory
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | wincmd p | ene | exe 'NERDTree' argv()[0] | endif
+" Open NERDTree manually with F5
 " Automatically close vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Open a NERDTree
@@ -330,6 +331,14 @@ vim.lsp.config('cmake', {
 })
 
 vim.lsp.enable({ 'ccls', 'pylsp', 'vimls', 'cmake', 'dockerls' })
+
+-- treesitter setup (nvim 0.12+ has built-in treesitter highlight)
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp', 'python', 'cmake', 'vim', 'lua', 'json', 'yaml', 'bash' },
+  callback = function()
+    vim.treesitter.start()
+  end,
+})
 
 -- telescope setup
 require('telescope').setup({
