@@ -32,36 +32,30 @@ Plug 'tpope/vim-obsession'
 Plug 'mhinz/vim-startify'
 
 " Fuzzy search
-" prerequisite: https://github.com/junegunn/fzf
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
-" Automatic run ctags
-" prerequisite: https://github.com/universal-ctags/ctags
-Plug 'ludovicchabant/vim-gutentags'
-
-" show tags in split
-Plug 'preservim/tagbar'
 
 " show icons along file
 " must install nerdfonts: https://www.nerdfonts.com/font-downloads
 " Plug 'ryanoasis/vim-devicons'
 
-" async code completion by language server
+" LSP and completion
 " prerequisite
 " vim: npm install -g vim-language-server
 " python: pip install python-lsp-server
 " c++: build ccls
 " cmake: pip install cmake-language-server
 " dockerfile: npm install -g dockerfile-language-server-nodejs
-" json: :CocInstall coc-json
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" json comments support
-Plug 'neoclide/jsonc.vim'
-
-" Snippets, works with CocInstall coc-snippets
-Plug 'honza/vim-snippets'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'rafamadriz/friendly-snippets'
 
 " color schemes
 Plug 'flazz/vim-colorschemes'
@@ -171,11 +165,6 @@ autocmd FileType make setlocal noexpandtab
 autocmd BufRead,BufNewFile {*.markdown,*.mdown,*.mkdn,*.md,*.mkd,*.mdwn,*.mdtxt,*.mdtext,*.text} set filetype=markdown
 autocmd FileType markdown setlocal syntax=off
 
-" set tags path
-" search current file directory firstly
-" search vim :pwd directory secondly
-set tags=./.tags;,.tags
-
 " colorscheme
 "set t_Co=256 " should be set in .bashrc
 syntax enable
@@ -185,8 +174,9 @@ colorscheme monokai
 " terminal
 tnoremap <Esc> <C-\><C-n>
 
-"termdebug
-packadd termdebug
+"termdebug (lazy load on first use)
+command! -nargs=* -complete=file Termdebug silent! packadd termdebug | Termdebug <args>
+command! -nargs=* -complete=file TermdebugCommand silent! packadd termdebug | TermdebugCommand <args>
 " }}}
 
 " Plugin Settings {{{
@@ -221,142 +211,141 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
     \ }
 " }}}
 
-" COC {{{
-" if hidden is not set, TextEdit might fail.
-set hidden
-
-" Some servers have issues with backup files, see #649
+" LSP & Completion {{{
 set nobackup
 set nowritebackup
-
-" Better display for messages
 set cmdheight=1
-
-" You will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
-
-" don't give |ins-completion-menu| messages.
 set shortmess+=c
-
-" always show signcolumns
 set signcolumn=yes
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" Or use `complete_info` if your vim support it, like:
-" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap for do codeAction of current line
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Fix autofix problem of current line
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Create mappings for function text object, requires document symbols feature of languageserver.
-xmap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap if <Plug>(coc-funcobj-i)
-omap af <Plug>(coc-funcobj-a)
-
-" Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-"nmap <silent> <C-d> <Plug>(coc-range-select)
-"xmap <silent> <C-d> <Plug>(coc-range-select)
-
 " Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
+command! -nargs=0 Format :lua vim.lsp.buf.format()
 
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+lua << EOF
+-- nvim-cmp setup
+local cmp = require('cmp')
+local luasnip = require('luasnip')
 
-" use `:OR` for organize import of current buffer
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+require('luasnip.loaders.from_vscode').lazy_load()
 
-" Add status line support, for integration with other plugin, checkout `:h coc-status`
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+  }, {
+    { name = 'buffer' },
+    { name = 'path' },
+  }),
+})
 
-" Using CocList
-" Show all diagnostics
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+-- LSP keymaps (set on LspAttach)
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local opts = { noremap = true, silent = true, buffer = args.buf }
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'gy', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, opts)
+    vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, opts)
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+    vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
+    vim.keymap.set('x', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
+    vim.keymap.set('n', '<leader>ac', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<leader>qf', vim.diagnostic.setloclist, opts)
+  end,
+})
+
+-- Advertise cmp capabilities to all LSP servers
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
+
+-- LSP server configs (migrated from coc-settings.json)
+vim.lsp.config('ccls', {
+  init_options = {
+    cache = { directory = '/tmp/ccls' },
+    highlight = { lsRanges = true },
+  },
+})
+
+vim.lsp.config('pylsp', {
+  settings = {
+    pylsp = {
+      plugins = {
+        jedi_completion = { enabled = true },
+        jedi_hover = { enabled = true },
+        jedi_references = { enabled = true },
+        jedi_signature_help = { enabled = true },
+        jedi_symbols = { enabled = true, all_scopes = true },
+        mccabe = { enabled = true, threshold = 15 },
+        preload = { enabled = true },
+        pylint = { enabled = false },
+        pycodestyle = { enabled = false },
+        pydocstyle = { enabled = false },
+        pyflakes = { enabled = false },
+        rope_completion = { enabled = true },
+        yapf = { enabled = true },
+      },
+    },
+  },
+})
+
+vim.lsp.config('cmake', {
+  init_options = {
+    buildDirectory = 'build',
+  },
+})
+
+vim.lsp.enable({ 'ccls', 'pylsp', 'vimls', 'cmake', 'dockerls' })
+
+-- telescope setup
+require('telescope').setup({
+  defaults = {
+    mappings = {
+      i = {
+        ['<C-j>'] = require('telescope.actions').move_selection_next,
+        ['<C-k>'] = require('telescope.actions').move_selection_previous,
+      },
+    },
+  },
+})
+require('telescope').load_extension('fzf')
+EOF
 " }}}
 
-" tagbar {{{
-let g:tagbar_width=35
-let g:tagbar_autofocus=1
-nmap <F6> :TagbarToggle<CR>
-" }}}
 
 " Airline: {{{
 " Enable the list of buffers
@@ -382,30 +371,6 @@ let g:starship= [
 let g:startify_custom_header = g:starship
 " }}}
 
-" vim-gutentags: {{{
-" gutentags 搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归
-let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
-
-" 所生成的数据文件的名称
-let g:gutentags_ctags_tagfile = '.tags'
-
-" 只扫描加入git库的代码
-let g:gutentags_file_list_command = 'git ls-files'
-
-" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
-"let s:vim_tags = expand('~/.cache/tags')
-" 检测 ~/.cache/tags 不存在就新建
-"if !isdirectory(s:vim_tags)
-"   silent! call mkdir(s:vim_tags, 'p')
-"endif
-"let g:gutentags_cache_dir = s:vim_tags
-
-" 配置 ctags 的参数
-let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
-let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
-let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-
-" }}}
 
 " vim-tmux-navigator: {{{
 " unify movement between vim splits and tmux panes
@@ -419,28 +384,27 @@ nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
 let g:tmux_navigator_save_on_switch = 2
 " }}}
 
-" fzf.vim {{{
-" search files
-nmap <Leader>f :GFiles<CR>
-nmap <Leader>F :Files<CR>
+" telescope.nvim {{{
+" prerequisite: ripgrep (for live_grep)
+nmap <Leader>f <cmd>Telescope git_files<cr>
+nmap <Leader>F <cmd>Telescope find_files<cr>
 " search buffers
-nmap <Leader>b :Buffers<CR>
-nmap <Leader>h :History<CR>
+nmap <Leader>b <cmd>Telescope buffers<cr>
+nmap <Leader>h <cmd>Telescope oldfiles<cr>
 " search tags
-nmap <Leader>t :BTags<CR>
-nmap <Leader>T :Tags<CR>
+nmap <Leader>t <cmd>Telescope current_buffer_tags<cr>
+nmap <Leader>T <cmd>Telescope tags<cr>
 " search lines
-nmap <Leader>l :BLines<CR>
-nmap <Leader>L :Lines<CR>
-nmap <Leader>' :Marks<CR>
+nmap <Leader>l <cmd>Telescope current_buffer_fuzzy_find<cr>
+nmap <Leader>L <cmd>Telescope live_grep<cr>
+nmap <Leader>' <cmd>Telescope marks<cr>
 " search projects
-nmap <Leader>/ :Ag<Space>
-" nmap <Leader>/ :Rg<Space>
+nmap <Leader>/ <cmd>Telescope live_grep<cr>
 " search helps
-nmap <Leader>H :Helptags!<CR>
+nmap <Leader>H <cmd>Telescope help_tags<cr>
 " search commands
-nmap <Leader>C :Commands<CR>
+nmap <Leader>C <cmd>Telescope commands<cr>
 " search commands history
-nmap <Leader>: :History:<CR>
+nmap <Leader>: <cmd>Telescope command_history<cr>
 " }}}
 " }}}
