@@ -44,6 +44,21 @@ stow -v -D -t $HOME nvim
 
 - [agentic-metric](https://github.com/MrQianjinsi/agentic-metric) — AI coding agent 指标监控，用于 i3blocks 和 tmux 状态栏显示今日 AI 用量。安装：`pip install agentic-metric`
 
+## Fonts
+
+Ghostty 使用 [JetBrains Mono Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts/releases) 作为主字体，需额外安装 `fonts-symbola` 作为 fallback 以支持特殊 Unicode 符号（如 `⏵`）。
+
+```bash
+# JetBrains Mono Nerd Font
+wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz
+mkdir -p ~/.local/share/fonts
+tar -xf /tmp/JetBrainsMono.tar.xz -C ~/.local/share/fonts
+fc-cache -f
+
+# Symbola (Unicode symbol fallback)
+sudo apt install -y fonts-symbola
+```
+
 ## Machine-Specific Config
 
 Some settings may need manual adjustment per machine:

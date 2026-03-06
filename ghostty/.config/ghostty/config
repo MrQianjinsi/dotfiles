@@ -48,6 +48,10 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
+# Font
+font-family = JetBrainsMono Nerd Font Mono
+font-size = 13
+
 # Window
 window-padding-x = 10
 window-padding-y = 10
