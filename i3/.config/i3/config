@@ -83,7 +83,7 @@ bindsym XF86AudioPrev exec playerctl previous
 
 # start dmenu (a program launcher)
 #bindsym $mod+d exec dmenu_run
-bindsym $mod+d exec i3-dmenu-desktop 
+bindsym $mod+d exec --no-startup-id env LC_ALL=C.UTF-8 i3-dmenu-desktop 
 #bindsym $mod+d exec rofi -show run -lines 5 -eh 2 -width 100 -padding 400 -opacity "80" -bw 0 -bc "$base01" -bg "$base02" -fg "$base07" -hlbg "$base05" -columns 2 -font "System San Francisco Display 12" -hlfg "#9575cd"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
