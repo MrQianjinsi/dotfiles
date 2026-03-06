@@ -33,7 +33,7 @@ Plug 'mhinz/vim-startify'
 
 " Fuzzy search
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 
@@ -61,8 +61,8 @@ Plug 'rafamadriz/friendly-snippets'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " color schemes
-Plug 'flazz/vim-colorschemes'
-Plug 'sickill/vim-monokai'
+Plug 'rktjmp/lush.nvim'
+Plug 'rockyzhang24/arctic.nvim', { 'branch': 'v2' }
 
 " lint engine
 " Plug 'w0rp/ale'
@@ -171,7 +171,8 @@ autocmd FileType markdown setlocal syntax=off
 " colorscheme
 "set t_Co=256 " should be set in .bashrc
 syntax enable
-colorscheme monokai
+set termguicolors
+colorscheme arctic
 "let g:molokai_original = 1 " use molokai backgound color
 
 " terminal
@@ -294,12 +295,9 @@ vim.lsp.config('*', {
   capabilities = require('cmp_nvim_lsp').default_capabilities(),
 })
 
--- LSP server configs (migrated from coc-settings.json)
-vim.lsp.config('ccls', {
-  init_options = {
-    cache = { directory = '/tmp/ccls' },
-    highlight = { lsRanges = true },
-  },
+-- LSP server configs
+vim.lsp.config('clangd', {
+  cmd = { 'clangd', '--background-index', '--clang-tidy' },
 })
 
 vim.lsp.config('pylsp', {
@@ -330,7 +328,7 @@ vim.lsp.config('cmake', {
   },
 })
 
-vim.lsp.enable({ 'ccls', 'pylsp', 'vimls', 'cmake', 'dockerls' })
+vim.lsp.enable({ 'clangd', 'pylsp', 'vimls', 'cmake', 'dockerls' })
 
 -- treesitter setup (nvim 0.12+ has built-in treesitter highlight)
 vim.api.nvim_create_autocmd('FileType', {

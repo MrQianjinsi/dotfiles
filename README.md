@@ -40,6 +40,10 @@ stow -v -t $HOME nvim
 stow -v -D -t $HOME nvim
 ```
 
+## Dependencies
+
+- [agentic-metric](https://github.com/MrQianjinsi/agentic-metric) — AI coding agent 指标监控，用于 i3blocks 和 tmux 状态栏显示今日 AI 用量。安装：`pip install agentic-metric`
+
 ## Machine-Specific Config
 
 Some settings may need manual adjustment per machine:
@@ -47,3 +51,17 @@ Some settings may need manual adjustment per machine:
 - **i3blocks.conf** — WiFi interface name (`instance=wlp0s20f3`)
 - **i3/config** — Monitor names and resolutions (`$left`, `$middle`, `$right`)
 - **bashrc** — Run `conda init bash` if conda is needed
+
+## 常见问题
+
+### Ghostty SSH 到远程服务器后 Backspace 键表现为空格
+
+Ghostty 默认设置 `TERM=xterm-ghostty`，但远程服务器上通常没有对应的 terminfo 条目，导致 Backspace 键的转义序列无法被正确解释。
+
+解决方案 — 将 Ghostty 的 terminfo 同步到远程服务器：
+
+```bash
+infocmp -x | ssh 用户名@远程服务器 tic -x -
+```
+
+同步后重新连接即可。
