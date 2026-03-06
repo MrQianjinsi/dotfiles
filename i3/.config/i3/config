@@ -313,8 +313,8 @@ bar {
 exec_always feh --bg-scale $wallpaper
 # seafile client
 # exec  --no-startup-id seafile-applet
-# fcitx daemon
-# exec --no-startup-id i3-msg "exec fcitx"
+# fcitx5 daemon
+exec --no-startup-id fcitx5
 # network manager
 exec  --no-startup-id nm-applet
 # bluetooth manager
