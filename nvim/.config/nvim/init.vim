@@ -350,6 +350,14 @@ require('telescope').setup({
   },
 })
 require('telescope').load_extension('fzf')
+
+-- use git_files in git repos, fall back to find_files otherwise
+vim.api.nvim_create_user_command('TelescopeFiles', function()
+  local ok = pcall(require('telescope.builtin').git_files)
+  if not ok then
+    require('telescope.builtin').find_files()
+  end
+end, {})
 EOF
 " }}}
 
@@ -393,7 +401,7 @@ let g:tmux_navigator_save_on_switch = 2
 
 " telescope.nvim {{{
 " prerequisite: ripgrep (for live_grep)
-nmap <Leader>f <cmd>Telescope git_files<cr>
+nmap <Leader>f <cmd>TelescopeFiles<cr>
 nmap <Leader>F <cmd>Telescope find_files<cr>
 " search buffers
 nmap <Leader>b <cmd>Telescope buffers<cr>
