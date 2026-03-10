@@ -334,7 +334,7 @@ vim.lsp.enable({ 'clangd', 'pylsp', 'vimls', 'cmake', 'dockerls' })
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'c', 'cpp', 'python', 'cmake', 'vim', 'lua', 'json', 'yaml', 'bash' },
   callback = function()
-    vim.treesitter.start()
+    pcall(vim.treesitter.start)
   end,
 })
 
