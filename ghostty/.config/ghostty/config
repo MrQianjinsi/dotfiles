@@ -50,7 +50,7 @@
 
 # Font
 font-family = JetBrainsMono Nerd Font Mono
-font-size = 13
+font-family = Symbola
 
 # Window
 gtk-titlebar = true
