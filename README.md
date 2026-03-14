@@ -63,8 +63,11 @@ sudo apt install -y fonts-symbola
 
 Some settings may need manual adjustment per machine:
 
-- **i3blocks.conf** — WiFi interface name (`instance=wlp0s20f3`)
-- **i3/config** — Monitor names and resolutions (`$left`, `$middle`, `$right`)
+- **i3/local.conf** — 显示器别名、xrandr 布局绑定、机器特定的应用分配和自启动程序。参考 `i3/.config/i3/local.conf.example` 创建 `~/.config/i3/local.conf`
+- **i3blocks** — 配置中默认使用 `/usr/share/i3blocks/` 路径。如果你的机器上脚本在 `/usr/lib/i3blocks/`，创建符号链接使其兼容：
+  ```bash
+  sudo ln -s /usr/lib/i3blocks /usr/share/i3blocks
+  ```
 - **bashrc** — Run `conda init bash` if conda is needed
 
 ## 常见问题
