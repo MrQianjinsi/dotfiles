@@ -30,12 +30,10 @@ set $base0E #c0b7f9
 set $base0F #d06060
 #set $base0F #fcc09e
 
-# monitor alias
-set $left DP-1
-set $middle eDP-1
-set $right HDMI-1-0
-
 set $wallpaper $HOME/.config/i3/star_ships.jpg
+
+# Machine-specific settings (monitor aliases, xrandr layouts, app assignments, etc.)
+include ~/.config/i3/local.conf
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -201,23 +199,12 @@ bindsym $mod+$Alt+k move workspace to output up
 # move workspace right
 bindsym $mod+$Alt+l move workspace to output right
 
-# manage moniters
-# projection mode
-bindsym $mod+p exec "xrandr --output $top --mode 1920x1080 --same-as $middle"
-# horizonal triple moniter work station
-bindsym $mod+bracketleft exec "xrandr --output $left --mode 1920x1080 --pos 0x0 --rotate normal --output $middle --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output $right --mode 1920x1080 --pos 3840x0 --rotate normal"
-# horizonal dual moniter work station
-bindsym $mod+bracketright exec "xrandr --output $left --off --output $middle --primary --mode 1920x1080 --pos 0x0 --rotate normal --output $right --mode 1920x1080 --pos 1920x0 --rotate normal"
-# triple mointer work station
-#bindsym $mod+quotedbl exec "xrandr --output $builtin --mode 1920x1080 --pos 1080x1200 --rotate normal --output $top --mode 1920x1200 --pos 1080x0 --rotate normal --output DP2 --mode 1920x1080 --pos 0x0 --rotate left"
-# trun off outer screen
-bindsym $mod+backslash exec "xrandr --output $left --off --output $right --off"
+# manage monitors (xrandr bindings defined in local.conf)
 
 # Floating Windows
 #for_window [class="Update-manager"] floating enable
 
-assign [class="dev.warp.Warp"] $workspace1
-assign [class="Bytedance-feishu"] $workspace2
+# app-specific workspace assignments (machine-specific ones in local.conf)
 assign [class="Google-chrome"] $workspace3
 # WPS Writer
 # assign [class="Wps"] $workspace4
@@ -319,12 +306,9 @@ exec --no-startup-id fcitx5
 exec  --no-startup-id nm-applet
 # bluetooth manager
 exec  --no-startup-id blueman-applet
-# feishu
-exec --no-startup-id i3-msg "exec bytedance-feishu"
-# google hrome
+# google chrome
 exec --no-startup-id i3-msg "exec google-chrome-stable"
-# warp terminal
-exec --no-startup-id i3-msg "exec warp-terminal"
+# machine-specific autostart programs in local.conf
 # netease cloud music
 # exec --no-startup-id i3-msg "exec netease-cloud-music"
 # auto lock screen

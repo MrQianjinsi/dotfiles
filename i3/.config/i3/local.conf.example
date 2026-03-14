@@ -1,0 +1,20 @@
+# Monitor aliases
+set $left DP-1
+set $middle eDP-1
+set $right HDMI-1-0
+
+# Monitor layout bindings
+# projection mode
+bindsym $mod+p exec "xrandr --output $top --mode 1920x1080 --same-as $middle"
+# horizontal triple monitor work station
+bindsym $mod+bracketleft exec "xrandr --output $left --mode 1920x1080 --pos 0x0 --rotate normal --output $middle --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output $right --mode 1920x1080 --pos 3840x0 --rotate normal"
+# horizontal dual monitor work station
+bindsym $mod+bracketright exec "xrandr --output $left --off --output $middle --primary --mode 1920x1080 --pos 0x0 --rotate normal --output $right --mode 1920x1080 --pos 1920x0 --rotate normal"
+# turn off outer screens
+bindsym $mod+backslash exec "xrandr --output $left --off --output $right --off"
+
+# App workspace assignments
+assign [class="Bytedance-feishu"] $workspace2
+
+# Autostart programs
+exec --no-startup-id i3-msg "exec bytedance-feishu"
