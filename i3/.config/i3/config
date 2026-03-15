@@ -316,10 +316,10 @@ exec xautolock -time 5 -locker "$HOME/.config/i3/fuzzy_lock.sh $HOME/.config/i3/
 #-killtime 1 -killer 'xset dpms force off'  
 # Send signal to i3blocks
 # bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+10 i3blocks 
+bindsym --release XF86AudioRaiseVolume exec amixer -q sset Master 5%+ && pkill -RTMIN+10 i3blocks 
 # bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+10 i3blocks
+bindsym --release XF86AudioLowerVolume exec amixer -q sset Master 5%- && pkill -RTMIN+10 i3blocks
 #bindsym --release XF86AudioMute exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+10 i3blocks
+bindsym --release XF86AudioMute exec amixer -q sset Master toggle && pkill -RTMIN+10 i3blocks
 bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
 #bindsym --release Num_Lock  exec pkill -SIGRTMIN+11 i3blocks
