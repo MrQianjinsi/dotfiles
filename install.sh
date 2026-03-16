@@ -32,7 +32,10 @@ do_install() {
     tmux \
     arc-theme \
     fonts-font-awesome \
-    ripgrep
+    ripgrep \
+    xclip \
+    xsel \
+    copyq
 
   # Install vim-plug for neovim (if not present)
   PLUG_VIM="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim"

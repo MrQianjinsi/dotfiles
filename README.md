@@ -40,6 +40,18 @@ stow -v -t $HOME nvim
 stow -v -D -t $HOME nvim
 ```
 
+## Clipboard
+
+X11 下需要剪切板工具和管理器，`install.sh` 已包含：
+
+- `xclip` / `xsel` — 命令行剪切板访问
+- `copyq` — 剪切板管理器，持久化剪切板内容（X11 下进程退出后剪切板数据会丢失）
+
+安装后需在 i3 中自启动 copyq，在 `~/.config/i3/local.conf` 中添加：
+```
+exec --no-startup-id copyq
+```
+
 ## Dependencies
 
 - [agentic-metric](https://github.com/MrQianjinsi/agentic-metric) — AI coding agent 指标监控，用于 i3blocks 和 tmux 状态栏显示今日 AI 用量。安装：`pip install agentic-metric`
