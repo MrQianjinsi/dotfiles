@@ -314,12 +314,6 @@ exec --no-startup-id i3-msg "exec google-chrome-stable"
 # auto lock screen
 exec xautolock -time 5 -locker "$HOME/.config/i3/fuzzy_lock.sh $HOME/.config/i3/lock.png" -notify 30 -notifier "notify-send -u critical -t 10000 'LOCKING screen in 30 seconds'" -detectsleep
 #-killtime 1 -killer 'xset dpms force off'  
-# Send signal to i3blocks
-# bindsym --release XF86AudioRaiseVolume exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioRaiseVolume exec amixer -q sset Master 5%+ && pkill -RTMIN+10 i3blocks 
-# bindsym --release XF86AudioLowerVolume exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioLowerVolume exec amixer -q sset Master 5%- && pkill -RTMIN+10 i3blocks
-#bindsym --release XF86AudioMute exec pkill -SIGRTMIN+10 i3blocks
-bindsym --release XF86AudioMute exec amixer -q sset Master toggle && pkill -RTMIN+10 i3blocks
+# Volume controls (machine-specific, defined in local.conf)
 bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
 #bindsym --release Num_Lock  exec pkill -SIGRTMIN+11 i3blocks

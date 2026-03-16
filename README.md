@@ -82,6 +82,16 @@ Some settings may need manual adjustment per machine:
   ```
 - **bashrc** — Run `conda init bash` if conda is needed
 
+## 用户权限
+
+屏幕亮度调节（`brightnessctl`）需要对 backlight 设备的写权限，须将用户加入 `video` 组：
+
+```bash
+sudo usermod -aG video $USER
+```
+
+加入后需注销重新登录生效。
+
 ## 常见问题
 
 ### Ghostty SSH 到远程服务器后 Backspace 键表现为空格
