@@ -76,10 +76,7 @@ call plug#end()
 
 " Vim Settings {{{
 " fold
-set foldmethod=indent
-autocmd Filetype vim setlocal foldmethod=marker
-" open 5 levels of folds automattically when open file
-set foldlevel=5
+set nofoldenable
 " show line numbers
 set number
 set numberwidth=5
