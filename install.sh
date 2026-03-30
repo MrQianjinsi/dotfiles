@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-STOW_PACKAGES=(bash tmux nvim i3 ranger docker npm pip gtk ghostty)
+STOW_PACKAGES=(bash tmux nvim i3 ranger docker npm pip gtk ghostty xresources)
 
 usage() {
   echo "Usage: $0 {install|stow|unstow|all}"
