@@ -130,13 +130,19 @@ export GIT_PS1_SHOWDIRTYSTATE=1
 # '\W' adds the name of the current directory
 export PS1="$purple\u$green\$(__git_ps1)$blue \W $ $reset"
 
-# nvidia cuda settings
-export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-
 # proxy environment
 alias hp='export all_proxy=http://127.0.0.1:7890'
+alias ccode="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' claude"
+alias kiro="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' kiro-cli"
+alias codex="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' codex"
+alias codex-yolo="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' codex --dangerously-bypass-approvals-and-sandbox"
+alias codex-yolo="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' codex --dangerously-bypass-approvals-and-sandbox"
+alias ccode-yolo="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' claude --dangerously-skip-permissions"
+alias ccode-remote="https_proxy='http://127.0.0.1:7890'  no_proxy='localhost,127.0.0.1' claude remote-control --dangerously-skip-permissions"
+alias claude-yolo="claude --dangerously-skip-permissions"
 alias unhp='unset all_proxy'
+alias vim='nvim'
+export EDITOR=vim
 
 # Recover a live DISPLAY/XAUTHORITY when the inherited one is stale.
 # Long-lived tmux panes can keep an old DISPLAY, which breaks X11 clipboard
@@ -219,4 +225,32 @@ if [ -n "${TMUX:-}" ] && command -v tmux >/dev/null 2>&1; then
     unset _tmux_env_var
 fi
 
-# conda: run `conda init bash` to set up conda on this machine
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/mrqianjinsi/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/mrqianjinsi/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/mrqianjinsi/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/mrqianjinsi/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# pnpm
+export PNPM_HOME="/home/mrqianjinsi/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
