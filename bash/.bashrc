@@ -138,5 +138,85 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PAT
 alias hp='export all_proxy=http://127.0.0.1:7890'
 alias unhp='unset all_proxy'
 
-# conda: run `conda init bash` to set up conda on this machine
+# Recover a live DISPLAY/XAUTHORITY when the inherited one is stale.
+# Long-lived tmux panes can keep an old DISPLAY, which breaks X11 clipboard
+# access and image paste in terminal apps.
+_fix_x11_env_for_tmux() {
+    command -v xset >/dev/null 2>&1 || return
 
+    _x11_display_works() {
+        [ -n "$1" ] || return 1
+
+        case "$1" in
+            :*|unix:*)
+                _x11_num="${1#unix:}"
+                _x11_num="${_x11_num%%.*}"
+                _x11_num="${_x11_num#:}"
+                [ -S "/tmp/.X11-unix/X$_x11_num" ] || return 1
+                ;;
+        esac
+
+        if command -v timeout >/dev/null 2>&1; then
+            DISPLAY="$1" XAUTHORITY="${2-${XAUTHORITY:-}}" timeout 1 xset q >/dev/null 2>&1
+        else
+            DISPLAY="$1" XAUTHORITY="${2-${XAUTHORITY:-}}" xset q >/dev/null 2>&1
+        fi
+    }
+
+    if _x11_display_works "${DISPLAY:-}" "${XAUTHORITY:-}"; then
+        unset -f _x11_display_works
+        return
+    fi
+
+    if [ -n "${TMUX:-}" ] && command -v tmux >/dev/null 2>&1; then
+        _tmux_display=$(tmux show-environment -g DISPLAY 2>/dev/null | sed -n 's/^DISPLAY=//p')
+        _tmux_xauth=$(tmux show-environment -g XAUTHORITY 2>/dev/null | sed -n 's/^XAUTHORITY=//p')
+        if _x11_display_works "$_tmux_display" "$_tmux_xauth"; then
+            export DISPLAY="$_tmux_display"
+            [ -n "$_tmux_xauth" ] && export XAUTHORITY="$_tmux_xauth"
+        fi
+    fi
+
+    if ! _x11_display_works "${DISPLAY:-}" "${XAUTHORITY:-}"; then
+        _xauth_from_xorg=$(ps -eo args= 2>/dev/null | sed -n 's/.*-auth \([^ ]*\).*/\1/p' | head -n 1)
+        _xauth_candidates="${XAUTHORITY:-} $_xauth_from_xorg /run/user/$(id -u)/gdm/Xauthority $HOME/.Xauthority"
+
+        for _xsock in /tmp/.X11-unix/X*; do
+            [ -S "$_xsock" ] || continue
+            _xdpy=":${_xsock##*/X}"
+
+            for _xauth in $_xauth_candidates; do
+                [ -n "$_xauth" ] || continue
+                [ -r "$_xauth" ] || continue
+                if _x11_display_works "$_xdpy" "$_xauth"; then
+                    export DISPLAY="$_xdpy"
+                    export XAUTHORITY="$_xauth"
+                    break 2
+                fi
+            done
+
+            if _x11_display_works "$_xdpy" ""; then
+                export DISPLAY="$_xdpy"
+                break
+            fi
+        done
+    fi
+
+    unset -f _x11_display_works
+    unset _x11_num _tmux_display _tmux_xauth _xauth_from_xorg _xauth_candidates _xsock _xdpy _xauth
+}
+_fix_x11_env_for_tmux
+unset -f _fix_x11_env_for_tmux
+
+# Push the current GUI session environment back into tmux so new panes inherit
+# the right X11/desktop clipboard settings after attach or display changes.
+if [ -n "${TMUX:-}" ] && command -v tmux >/dev/null 2>&1; then
+    for _tmux_env_var in DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DESKTOP_SESSION; do
+        if [ -n "${!_tmux_env_var:-}" ]; then
+            tmux set-environment -g "$_tmux_env_var" "${!_tmux_env_var}" >/dev/null 2>&1
+        fi
+    done
+    unset _tmux_env_var
+fi
+
+# conda: run `conda init bash` to set up conda on this machine
