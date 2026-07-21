@@ -4,14 +4,29 @@ proxy=${CCUSAGE_PROXY:-http://127.0.0.1:7890}
 timezone=${CCUSAGE_TIMEZONE:-Asia/Shanghai}
 today=$(TZ="$timezone" date +%F)
 
-if [ -x "$HOME/.nvm/versions/node/v22.14.0/bin/ccusage" ]; then
-    ccusage_bin="$HOME/.nvm/versions/node/v22.14.0/bin/ccusage"
-elif command -v ccusage >/dev/null 2>&1; then
+ccusage_bin=${CCUSAGE_BIN:-}
+
+if [ -n "$ccusage_bin" ] && [ ! -x "$ccusage_bin" ]; then
+    ccusage_bin=
+fi
+
+if [ -z "$ccusage_bin" ] && command -v ccusage >/dev/null 2>&1; then
     ccusage_bin=$(command -v ccusage)
-else
+fi
+
+if [ -z "$ccusage_bin" ]; then
+    for candidate in "$HOME"/.nvm/versions/node/*/bin/ccusage; do
+        [ -x "$candidate" ] || continue
+        ccusage_bin=$candidate
+    done
+fi
+
+if [ -z "$ccusage_bin" ]; then
     echo "AI ccusage?"
     exit 0
 fi
+
+ccusage_dir=$(dirname "$ccusage_bin")
 
 if ! command -v jq >/dev/null 2>&1; then
     echo "AI jq?"
@@ -24,6 +39,7 @@ if command -v timeout >/dev/null 2>&1; then
 fi
 
 json=$(
+    PATH="$ccusage_dir:$PATH" \
     http_proxy="$proxy" \
     https_proxy="$proxy" \
     all_proxy="$proxy" \
