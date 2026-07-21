@@ -33,7 +33,7 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 0
 fi
 
-ccusage_cmd=("$ccusage_bin" daily --json --since "$today" --until "$today" --timezone "$timezone")
+ccusage_cmd=("$ccusage_bin" daily --offline --json --since "$today" --until "$today" --timezone "$timezone")
 if command -v timeout >/dev/null 2>&1; then
     ccusage_cmd=(timeout 20 "${ccusage_cmd[@]}")
 fi
